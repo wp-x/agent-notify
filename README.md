@@ -15,14 +15,26 @@
 ## 功能特性
 
 - 🖥️ **系统通知** - 支持 macOS、Linux、Windows 系统通知
-- 📱 **飞书通知** - 支持飞书机器人消息推送
-- 🔔 **事件订阅** - Claude Code 支持 4 种事件；Codex 支持 2 种事件（授权请求、任务完成）
-- 🔄 **自动安装** - 自动配置 Claude Code 与 Codex 的 hooks
-- 📦 **NPX 一键安装** - 无需手动下载，一条命令完成安装
+- 📱 **飞书通知** - 支持一键扫码绑定、支持飞书机器人消息推送
+- 🔔 **事件订阅** - Claude Code 支持 4 种事件；Codex 支持 2 种事件
 
-## 安装
 
-### 通过 NPX 运行（推荐）
+### 支持的事件
+
+| 事件 | 说明 | Claude Code | Codex |
+|------|------|:---:|:---:|
+| `permission_required` | Agent 需要授权（如执行命令） | ✅ | ✅ |
+| `input_required` | Agent 等待用户输入 | ✅ | — |
+| `run_completed` | 任务执行完成 | ✅ | ✅ |
+| `run_failed` | 任务执行失败 | ✅ | — |
+
+说明：
+
+- Claude Code 通过 `~/.claude/settings.json` 的 hooks 订阅四个事件（`PermissionRequest`、`Notification`、`Stop`、`PostToolUseFailure`）。
+- Codex 通过 `~/.codex/hooks.json` 订阅 `PermissionRequest` 与 `Stop`，分别映射到 `permission_required` 与 `run_completed`。`input_required` 与 `run_failed` Codex 目前没有对应 hook，因此暂不支持。
+
+
+## 快速开始
 
 ```bash
 npx agent-notify
@@ -51,77 +63,6 @@ launcher 不会持久修改你的 PATH，而是始终用绝对路径执行已安
 - Linux arm64
 - Windows amd64
 - Windows arm64
-
-### 通过 npm 全局安装
-
-```bash
-npm install -g agent-notify
-agent-notify
-```
-
-全局安装 npm 包后，运行方式与 `npx agent-notify` 一致：launcher 仍会把真实二进制安装到 `~/.agent-notify/` 并按版本检查后执行。
-
-### 手动下载
-
-从 [GitHub Releases](https://github.com/hellolib/agent-notify/releases) 下载对应平台的二进制文件。
-
-## 快速开始
-
-### 通过 launcher 使用
-
-#### NPX
-
-```bash
-npx agent-notify
-npx agent-notify init
-npx agent-notify test system
-npx agent-notify test feishu
-npx agent-notify doctor
-```
-
-#### npm 全局安装后的 launcher 入口
-
-```bash
-npm install -g agent-notify
-agent-notify
-agent-notify init
-agent-notify test system
-agent-notify test feishu
-agent-notify doctor
-```
-
-无论是 `npx agent-notify` 还是全局安装后的 `agent-notify`，入口仍然是 launcher；它会把真实二进制放在 `~/.agent-notify/` 下并按版本检查后执行。
-
-### 通过手动下载的二进制使用
-
-如果你下载了 release 二进制，并直接执行该文件，则可以使用：
-
-```bash
-./agent-notify
-./agent-notify init
-./agent-notify test system
-./agent-notify test feishu
-./agent-notify doctor
-```
-
-按提示选择：
-1. 选择要配置的 Agent（Claude Code / Codex，单选）
-2. 选择通知渠道（飞书和系统通知默认全选）
-3. 选择要接收通知的事件类型：Claude Code 4 选项默认全选；Codex 2 选项默认全选（`permission_required`、`run_completed`）
-
-## 支持的事件
-
-| 事件 | 说明 | Claude Code | Codex |
-|------|------|:---:|:---:|
-| `permission_required` | Agent 需要授权（如执行命令） | ✅ | ✅ |
-| `input_required` | Agent 等待用户输入 | ✅ | — |
-| `run_completed` | 任务执行完成 | ✅ | ✅ |
-| `run_failed` | 任务执行失败 | ✅ | — |
-
-说明：
-
-- Claude Code 通过 `~/.claude/settings.json` 的 hooks 订阅四个事件（`PermissionRequest`、`Notification`、`Stop`、`PostToolUseFailure`）。
-- Codex 通过 `~/.codex/hooks.json` 订阅 `PermissionRequest` 与 `Stop`，分别映射到 `permission_required` 与 `run_completed`。`input_required` 与 `run_failed` Codex 目前没有对应 hook，因此暂不支持。
 
 ## 配置文件
 
@@ -168,99 +109,32 @@ behavior:
   locale: zh-CN
 ```
 
-## 命令参考
+## 效果图
+### 软件配置
 
-### launcher 方式
+<p align="center">
+  <img src="assist/launch-setting.png" alt="软件配置" width="50%" />
+</p>
 
-```bash
-npx agent-notify              # 通过 npx 进入交互式主菜单
-npx agent-notify init         # 通过 npx 初始化配置
-npx agent-notify test system  # 通过 npx 测试系统通知
-npx agent-notify test feishu  # 通过 npx 测试飞书通知
-npx agent-notify doctor       # 通过 npx 做环境诊断
-npx agent-notify --help       # 通过 npx 查看帮助
+### 飞书绑定
 
-agent-notify                  # npm 全局安装后的 launcher 入口
-agent-notify init
-agent-notify test system
-agent-notify test feishu
-agent-notify doctor
-agent-notify --help
-```
+<p align="center">
+  <img src="assist/feishu-bind.png" alt="飞书绑定" width="50%" />
+</p>
 
-### 手动下载的二进制方式
+### 飞书通知
 
-```bash
-./agent-notify              # 直接执行下载后的二进制
-./agent-notify init
-./agent-notify test system
-./agent-notify test feishu
-./agent-notify doctor
-./agent-notify --help
-```
+<p align="center">
+  <img src="assist/feishu-notify-phone.png" alt="飞书通知" width="50%" />
+</p>
 
-## 飞书配置
+### 系统通知
 
-首次使用飞书通知时，会自动引导你完成飞书 CLI 的初始化：
-1. 扫码登录
-2. 选择要使用的机器人
+<p align="center">
+  <img src="assist/system-notify.png" alt="系统通知" />
+</p>
 
-飞书的通知目标为机器人的所有者；
 
-## 开发
+## Friendship Link
 
-### 使用 Makefile
-
-```bash
-# 查看所有可用命令
-make help
-
-# 构建二进制文件
-make build
-
-# 构建所有平台
-make build-all
-
-# 运行测试
-make test
-
-# 运行测试并生成覆盖率报告
-make test-coverage
-
-# 本地开发运行
-make run
-
-# 清理构建产物
-make clean
-
-# 安装到 GOPATH/bin
-make install
-
-# 代码格式化
-make fmt
-
-# 运行 go vet
-make vet
-
-# 运行 linter（需要安装 golangci-lint）
-make lint
-
-# 整理 go modules
-make mod-tidy
-
-# 运行 doctor 诊断
-make doctor
-```
-
-### 直接使用 Go 命令
-
-```bash
-# 运行测试
-go test ./...
-
-# 本地开发运行
-go run ./cmd/agent-notify
-
-# 构建
-go build -o agent-notify ./cmd/agent-notify
-```
+Thanks for the support and feedback from the friends at [LINUX DO](https://linux.do/). 
