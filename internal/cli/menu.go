@@ -120,6 +120,7 @@ func runChannelsMenu(ctx context.Context, streams Streams, prompter Prompter) er
 	for {
 		choice, err := prompter.Select("消息渠道配置", []PromptOption{
 			{Label: "初始化飞书", Value: "feishu-init"},
+			{Label: "初始化企业微信", Value: "wechatwork-init"},
 			{Label: "返回", Value: "back"},
 		}, "feishu-init")
 		if err != nil {
@@ -132,6 +133,10 @@ func runChannelsMenu(ctx context.Context, streams Streams, prompter Prompter) er
 				return err
 			}
 			fmt.Fprintln(streams.Stdout, "✅ 飞书 CLI 初始化完成")
+		case "wechatwork-init":
+			if err := runInitWechatWork(streams, prompter); err != nil {
+				return err
+			}
 		case "back":
 			return nil
 		}

@@ -141,6 +141,38 @@ func runTestWechatWork(ctx context.Context, streams Streams) error {
 	return nil
 }
 
+func runInitWechatWork(streams Streams, prompter Prompter) error {
+	cfg, path, err := loadDefaultConfig()
+	if err != nil {
+		return err
+	}
+
+	// Get current webhook URL (use claude's if available)
+	currentURL := cfg.Notify.ClaudeCode.Channels.WechatWork.WebhookURL
+	if currentURL == "" {
+		currentURL = cfg.Notify.Codex.Channels.WechatWork.WebhookURL
+	}
+
+	webhookURL, err := prompter.Input("企业微信群机器人 Webhook URL", currentURL)
+	if err != nil {
+		return err
+	}
+
+	// Update both agents with the same webhook URL
+	cfg.Notify.ClaudeCode.Channels.WechatWork.Enabled = true
+	cfg.Notify.ClaudeCode.Channels.WechatWork.WebhookURL = webhookURL
+	cfg.Notify.Codex.Channels.WechatWork.Enabled = true
+	cfg.Notify.Codex.Channels.WechatWork.WebhookURL = webhookURL
+
+	if err := config.Save(path, cfg); err != nil {
+		return fmt.Errorf("保存配置失败: %w", err)
+	}
+
+	fmt.Fprintln(streams.Stdout, "✅ 企业微信 Webhook 配置完成")
+	fmt.Fprintf(streams.Stdout, "配置文件: %s\n", path)
+	return nil
+}
+
 func runDoctor(streams Streams) error {
 	svc := doctor.NewService(
 		doctor.WithClaudeIntegration(agentintegrations.NewClaudeIntegration()),
@@ -175,42 +207,27 @@ func printCurrentNotifyConfig(streams Streams) error {
 
 	fmt.Fprintf(streams.Stdout, "配置文件: %s\n\n", path)
 
-	// Agent status table
-	fmt.Fprintln(streams.Stdout, "┌─────────────┬──────┬──────┬────────┐")
-	fmt.Fprintln(streams.Stdout, "│ Agent       │ 飞书   │ 系统   │ 企业微信 │")
-	fmt.Fprintln(streams.Stdout, "├─────────────├──────├──────├────────┤")
+	statusIcon := func(enabled bool) string {
+		if enabled {
+			return "✅"
+		}
+		return "❌"
+	}
 
-	// Claude Code
-	claudeFeishu := "❌"
-	if cfg.Notify.ClaudeCode.Channels.Feishu.Enabled {
-		claudeFeishu = "✅"
-	}
-	claudeSystem := "❌"
-	if cfg.Notify.ClaudeCode.Channels.System.Enabled {
-		claudeSystem = "✅"
-	}
-	claudeWechat := "❌"
-	if cfg.Notify.ClaudeCode.Channels.WechatWork.Enabled {
-		claudeWechat = "✅"
-	}
-	fmt.Fprintf(streams.Stdout, "│ Claude Code │   %s    │   %s    │   %s      │\n", claudeFeishu, claudeSystem, claudeWechat)
+	// Fixed width table with ASCII borders
+	fmt.Fprintln(streams.Stdout, "+----------------+------+------+--------+")
+	fmt.Fprintln(streams.Stdout, "| Agent          | Fei  | Sys  | WXWork |")
+	fmt.Fprintln(streams.Stdout, "+----------------+------+------+--------+")
+	fmt.Fprintf(streams.Stdout, "| %-14s |  %s   |  %s   |   %s    |\n", "Claude Code",
+		statusIcon(cfg.Notify.ClaudeCode.Channels.Feishu.Enabled),
+		statusIcon(cfg.Notify.ClaudeCode.Channels.System.Enabled),
+		statusIcon(cfg.Notify.ClaudeCode.Channels.WechatWork.Enabled))
+	fmt.Fprintf(streams.Stdout, "| %-14s |  %s   |  %s   |   %s    |\n", "Codex",
+		statusIcon(cfg.Notify.Codex.Channels.Feishu.Enabled),
+		statusIcon(cfg.Notify.Codex.Channels.System.Enabled),
+		statusIcon(cfg.Notify.Codex.Channels.WechatWork.Enabled))
+	fmt.Fprintln(streams.Stdout, "+----------------+------+------+--------+")
 
-	// Codex
-	codexFeishu := "❌"
-	if cfg.Notify.Codex.Channels.Feishu.Enabled {
-		codexFeishu = "✅"
-	}
-	codexSystem := "❌"
-	if cfg.Notify.Codex.Channels.System.Enabled {
-		codexSystem = "✅"
-	}
-	codexWechat := "❌"
-	if cfg.Notify.Codex.Channels.WechatWork.Enabled {
-		codexWechat = "✅"
-	}
-	fmt.Fprintf(streams.Stdout, "│ Codex       │   %s    │   %s    │   %s      │\n", codexFeishu, codexSystem, codexWechat)
-
-	fmt.Fprintln(streams.Stdout, "└─────────────┴──────┴──────┴────────┘")
 	return nil
 }
 

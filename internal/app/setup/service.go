@@ -176,8 +176,8 @@ func (s *Service) Run(ctx context.Context, prompter Prompter, output OutputWrite
 	channelChoices, err := prompter.MultiSelect(
 		"启用通知渠道",
 		[]PromptOption{
-			{Label: "飞书", Value: "feishu"},
 			{Label: "系统通知", Value: "system"},
+			{Label: "飞书", Value: "feishu"},
 			{Label: "企业微信", Value: "wechat-work"},
 		},
 		currentChannels,
