@@ -226,21 +226,26 @@ func printCurrentNotifyConfig(streams Streams) error {
 		return "❌"
 	}
 
-	// Fixed width table with ASCII borders
-	fmt.Fprintln(streams.Stdout, "+----------------+------+------+--------+------+")
-	fmt.Fprintln(streams.Stdout, "| Agent          | Fei  | Sys  | WXWork | Bark |")
-	fmt.Fprintln(streams.Stdout, "+----------------+------+------+--------+------+")
-	fmt.Fprintf(streams.Stdout, "| %-14s |  %s   |  %s   |   %s    |  %s   |\n", "Claude Code",
+	// Fixed width table with ASCII borders.
+	// 终端宽度规划：Agent=14, 飞书/系统/钉钉/Bark 列宽 6（含两侧空格），企业微信列宽 10。
+	// emoji ✅/❌ 按 2 列宽计算，所以 6 宽列填 "  ✅  "（2 空格 + emoji + 2 空格），
+	// 10 宽列填 "    ✅    "（4 空格 + emoji + 4 空格）。
+	fmt.Fprintln(streams.Stdout, "+--------------+------+------+----------+------+------+")
+	fmt.Fprintln(streams.Stdout, "| Agent        | 飞书 | 系统 | 企业微信 | 钉钉 | Bark |")
+	fmt.Fprintln(streams.Stdout, "+--------------+------+------+----------+------+------+")
+	fmt.Fprintf(streams.Stdout, "| %-12s |  %s  |  %s  |    %s    |  %s  |  %s  |\n", "Claude Code",
 		statusIcon(cfg.Notify.ClaudeCode.Channels.Feishu.Enabled),
 		statusIcon(cfg.Notify.ClaudeCode.Channels.System.Enabled),
 		statusIcon(cfg.Notify.ClaudeCode.Channels.WechatWork.Enabled),
+		statusIcon(cfg.Notify.ClaudeCode.Channels.DingTalk.Enabled),
 		statusIcon(cfg.Notify.ClaudeCode.Channels.Bark.Enabled))
-	fmt.Fprintf(streams.Stdout, "| %-14s |  %s   |  %s   |   %s    |  %s   |\n", "Codex",
+	fmt.Fprintf(streams.Stdout, "| %-12s |  %s  |  %s  |    %s    |  %s  |  %s  |\n", "Codex",
 		statusIcon(cfg.Notify.Codex.Channels.Feishu.Enabled),
 		statusIcon(cfg.Notify.Codex.Channels.System.Enabled),
 		statusIcon(cfg.Notify.Codex.Channels.WechatWork.Enabled),
+		statusIcon(cfg.Notify.Codex.Channels.DingTalk.Enabled),
 		statusIcon(cfg.Notify.Codex.Channels.Bark.Enabled))
-	fmt.Fprintln(streams.Stdout, "+----------------+------+------+--------+------+")
+	fmt.Fprintln(streams.Stdout, "+--------------+------+------+----------+------+------+")
 
 	return nil
 }

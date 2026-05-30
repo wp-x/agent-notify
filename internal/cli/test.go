@@ -17,6 +17,7 @@ func newTestCmd(ctx context.Context, streams Streams) *cobra.Command {
 		newTestFeishuCmd(ctx, streams),
 		newTestSystemCmd(ctx, streams),
 		newTestBarkCmd(ctx, streams),
+		newTestDingTalkCmd(ctx, streams),
 	)
 	return cmd
 }
@@ -53,6 +54,16 @@ func newTestBarkCmd(ctx context.Context, streams Streams) *cobra.Command {
 		Short: "Send a Bark test notification",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runTestBark(ctx, streams)
+		},
+	}
+}
+
+func newTestDingTalkCmd(ctx context.Context, streams Streams) *cobra.Command {
+	return &cobra.Command{
+		Use:   "dingtalk",
+		Short: "Send a DingTalk test notification",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runTestDingTalk(ctx, streams)
 		},
 	}
 }

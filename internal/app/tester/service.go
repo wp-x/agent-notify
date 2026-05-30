@@ -27,6 +27,7 @@ type Service struct {
 	feishuSender     notify.Sender
 	systemSender     notify.Sender
 	wechatWorkSender notify.Sender
+	dingTalkSender   notify.Sender
 	barkSender       notify.Sender
 }
 
@@ -65,6 +66,11 @@ func WithSystemSender(sender notify.Sender) Option {
 // WithWechatWorkSender sets the WeChat Work sender.
 func WithWechatWorkSender(sender notify.Sender) Option {
 	return func(s *Service) { s.wechatWorkSender = sender }
+}
+
+// WithDingTalkSender sets the DingTalk sender.
+func WithDingTalkSender(sender notify.Sender) Option {
+	return func(s *Service) { s.dingTalkSender = sender }
 }
 
 // WithBarkSender sets the Bark sender.
@@ -121,6 +127,20 @@ func (s *Service) TestWechatWork(ctx context.Context, webhookURL string) (*TestW
 	return &TestWechatWorkResult{Message: "企业微信测试通知已发送"}, nil
 }
 
+// TestDingTalkResult contains the result of a DingTalk test.
+type TestDingTalkResult struct {
+	Message string
+}
+
+// TestDingTalk sends a test DingTalk notification using the provided webhook URL.
+func (s *Service) TestDingTalk(ctx context.Context, webhookURL string) (*TestDingTalkResult, error) {
+	msg := notify.Message{Event: "permission_required", Title: "Agent Notify 测试", Body: "这是一条钉钉测试消息"}
+	if err := s.dingTalkNotificationSender(webhookURL).Send(ctx, msg); err != nil {
+		return nil, err
+	}
+	return &TestDingTalkResult{Message: "钉钉测试通知已发送"}, nil
+}
+
 // TestBarkResult contains the result of a Bark test.
 type TestBarkResult struct {
 	Message string
@@ -168,6 +188,13 @@ func (s *Service) wechatWorkNotificationSender(webhookURL string) notify.Sender 
 		return s.wechatWorkSender
 	}
 	return notify.NewWechatWorkSender(webhookURL)
+}
+
+func (s *Service) dingTalkNotificationSender(webhookURL string) notify.Sender {
+	if s.dingTalkSender != nil {
+		return s.dingTalkSender
+	}
+	return notify.NewDingTalkSender(webhookURL)
 }
 
 func (s *Service) barkNotificationSender(webhookURL string) notify.Sender {

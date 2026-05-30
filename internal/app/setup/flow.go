@@ -16,6 +16,7 @@ const (
 	channelSystem   = "system"
 	channelFeishu   = "feishu"
 	channelWXWork   = "wechat-work"
+	channelDingTalk = "dingtalk"
 	channelBark     = "bark"
 	installScopeUsr = "user"
 	installScopePrj = "project"
@@ -25,6 +26,7 @@ var channelOptions = []PromptOption{
 	{Label: "系统通知", Value: channelSystem},
 	{Label: "飞书", Value: channelFeishu},
 	{Label: "企业微信", Value: channelWXWork},
+	{Label: "钉钉", Value: channelDingTalk},
 	{Label: "Bark", Value: channelBark},
 }
 
@@ -32,11 +34,12 @@ type channelSelection struct {
 	System     bool
 	Feishu     bool
 	WechatWork bool
+	DingTalk   bool
 	Bark       bool
 }
 
 func (c channelSelection) hasAny() bool {
-	return c.System || c.Feishu || c.WechatWork || c.Bark
+	return c.System || c.Feishu || c.WechatWork || c.DingTalk || c.Bark
 }
 
 type configureAgentRequest struct {
@@ -103,6 +106,9 @@ func currentChannelValues(channels config.ChannelsConfig) []string {
 	if channels.WechatWork.Enabled {
 		values = append(values, channelWXWork)
 	}
+	if channels.DingTalk.Enabled {
+		values = append(values, channelDingTalk)
+	}
 	if channels.Bark.Enabled {
 		values = append(values, channelBark)
 	}
@@ -114,6 +120,7 @@ func channelSelectionFromChoices(choices []string) channelSelection {
 		System:     slices.Contains(choices, channelSystem),
 		Feishu:     slices.Contains(choices, channelFeishu),
 		WechatWork: slices.Contains(choices, channelWXWork),
+		DingTalk:   slices.Contains(choices, channelDingTalk),
 		Bark:       slices.Contains(choices, channelBark),
 	}
 }
@@ -216,6 +223,7 @@ func applyChannelSelection(channels config.ChannelsConfig, selection channelSele
 	next.System.Enabled = selection.System
 	next.Feishu.Enabled = selection.Feishu
 	next.WechatWork.Enabled = selection.WechatWork
+	next.DingTalk.Enabled = selection.DingTalk
 	next.Bark.Enabled = selection.Bark
 	return next
 }
@@ -242,6 +250,13 @@ func promptWebhookURLs(
 			return config.ChannelsConfig{}, err
 		}
 		next.WechatWork.WebhookURL = webhookURL
+	}
+	if selection.DingTalk {
+		webhookURL, err := prompter.Input("钉钉群机器人 Webhook URL", next.DingTalk.WebhookURL)
+		if err != nil {
+			return config.ChannelsConfig{}, err
+		}
+		next.DingTalk.WebhookURL = webhookURL
 	}
 	if selection.Bark {
 		webhookURL, err := prompter.Input("Bark Webhook URL", next.Bark.WebhookURL)

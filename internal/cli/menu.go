@@ -99,6 +99,7 @@ func runTestMenu(ctx context.Context, streams Streams, prompter Prompter) error 
 		{Label: "飞书", Value: "feishu"},
 		{Label: "系统通知", Value: "system"},
 		{Label: "企业微信", Value: "wechat-work"},
+		{Label: "钉钉", Value: "dingtalk"},
 		{Label: "Bark", Value: "bark"},
 		{Label: "返回", Value: "back"},
 	}, "feishu")
@@ -113,6 +114,8 @@ func runTestMenu(ctx context.Context, streams Streams, prompter Prompter) error 
 		return runTestSystem(ctx, streams)
 	case "wechat-work":
 		return runTestWechatWork(ctx, streams)
+	case "dingtalk":
+		return runTestDingTalk(ctx, streams)
 	case "bark":
 		return runTestBark(ctx, streams)
 	default:
@@ -123,9 +126,10 @@ func runTestMenu(ctx context.Context, streams Streams, prompter Prompter) error 
 func runChannelsMenu(ctx context.Context, streams Streams, prompter Prompter) error {
 	for {
 		choice, err := prompter.Select("消息渠道配置", []PromptOption{
-			{Label: "初始化飞书", Value: "feishu-init"},
-			{Label: "初始化企业微信", Value: "wechatwork-init"},
-			{Label: "初始化 Bark", Value: "bark-init"},
+			{Label: "飞书", Value: "feishu-init"},
+			{Label: "企业微信", Value: "wechatwork-init"},
+			{Label: "钉钉", Value: "dingtalk-init"},
+			{Label: "Bark", Value: "bark-init"},
 			{Label: "返回", Value: "back"},
 		}, "feishu-init")
 		if err != nil {
@@ -140,6 +144,10 @@ func runChannelsMenu(ctx context.Context, streams Streams, prompter Prompter) er
 			fmt.Fprintln(streams.Stdout, "✅ 飞书 CLI 初始化完成")
 		case "wechatwork-init":
 			if err := runInitWechatWork(streams, prompter); err != nil {
+				return err
+			}
+		case "dingtalk-init":
+			if err := runInitDingTalk(streams, prompter); err != nil {
 				return err
 			}
 		case "bark-init":
@@ -213,6 +221,8 @@ func runCleanConfig(streams Streams, prompter Prompter) error {
 	defaultCfg.Notify.ClaudeCode.Channels.System.Enabled = false
 	defaultCfg.Notify.ClaudeCode.Channels.WechatWork.Enabled = false
 	defaultCfg.Notify.ClaudeCode.Channels.WechatWork.WebhookURL = ""
+	defaultCfg.Notify.ClaudeCode.Channels.DingTalk.Enabled = false
+	defaultCfg.Notify.ClaudeCode.Channels.DingTalk.WebhookURL = ""
 	defaultCfg.Notify.ClaudeCode.Channels.Bark.Enabled = false
 	defaultCfg.Notify.ClaudeCode.Channels.Bark.WebhookURL = ""
 	defaultCfg.Notify.ClaudeCode.Events = nil
@@ -221,6 +231,8 @@ func runCleanConfig(streams Streams, prompter Prompter) error {
 	defaultCfg.Notify.Codex.Channels.System.Enabled = false
 	defaultCfg.Notify.Codex.Channels.WechatWork.Enabled = false
 	defaultCfg.Notify.Codex.Channels.WechatWork.WebhookURL = ""
+	defaultCfg.Notify.Codex.Channels.DingTalk.Enabled = false
+	defaultCfg.Notify.Codex.Channels.DingTalk.WebhookURL = ""
 	defaultCfg.Notify.Codex.Channels.Bark.Enabled = false
 	defaultCfg.Notify.Codex.Channels.Bark.WebhookURL = ""
 	defaultCfg.Notify.Codex.Events = nil

@@ -50,6 +50,9 @@ func buildSenders(cfg config.Config, msg notify.Message) []notify.Sender {
 	if notifyCfg.Channels.WechatWork.Enabled && notifyCfg.Channels.WechatWork.WebhookURL != "" {
 		senders = append(senders, notify.NewWechatWorkSender(notifyCfg.Channels.WechatWork.WebhookURL))
 	}
+	if notifyCfg.Channels.DingTalk.Enabled && notifyCfg.Channels.DingTalk.WebhookURL != "" {
+		senders = append(senders, notify.NewDingTalkSender(notifyCfg.Channels.DingTalk.WebhookURL))
+	}
 	if notifyCfg.Channels.Bark.Enabled && notifyCfg.Channels.Bark.WebhookURL != "" {
 		senders = append(senders, notify.NewBarkSender(notifyCfg.Channels.Bark.WebhookURL))
 	}

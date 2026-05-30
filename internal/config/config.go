@@ -45,6 +45,7 @@ type ChannelsConfig struct {
 	Feishu     ChannelConfig           `yaml:"feishu"`      // 飞书通知配置
 	System     ChannelConfig           `yaml:"system"`      // 系统通知配置
 	WechatWork WechatWorkChannelConfig `yaml:"wechat_work"` // 企业微信通知配置
+	DingTalk   DingTalkChannelConfig   `yaml:"dingtalk"`    // 钉钉通知配置
 	Bark       BarkChannelConfig       `yaml:"bark"`        // Bark 通知配置
 }
 
@@ -56,6 +57,12 @@ type ChannelConfig struct {
 // WechatWorkChannelConfig holds configuration for WeChat Work (企业微信) webhook notifications.
 type WechatWorkChannelConfig struct {
 	Enabled    bool   `yaml:"enabled"`     // 是否启用企业微信通知
+	WebhookURL string `yaml:"webhook_url"` // 群机器人 Webhook URL
+}
+
+// DingTalkChannelConfig holds configuration for DingTalk (钉钉) webhook notifications.
+type DingTalkChannelConfig struct {
+	Enabled    bool   `yaml:"enabled"`     // 是否启用钉钉通知
 	WebhookURL string `yaml:"webhook_url"` // 群机器人 Webhook URL
 }
 
@@ -96,6 +103,7 @@ func Default() Config {
 					System:     ChannelConfig{Enabled: true},
 					Feishu:     ChannelConfig{Enabled: false},
 					WechatWork: WechatWorkChannelConfig{Enabled: false, WebhookURL: ""},
+					DingTalk:   DingTalkChannelConfig{Enabled: false, WebhookURL: ""},
 					Bark:       BarkChannelConfig{Enabled: false, WebhookURL: ""},
 				},
 			},
@@ -105,6 +113,7 @@ func Default() Config {
 					System:     ChannelConfig{Enabled: false},
 					Feishu:     ChannelConfig{Enabled: false},
 					WechatWork: WechatWorkChannelConfig{Enabled: false, WebhookURL: ""},
+					DingTalk:   DingTalkChannelConfig{Enabled: false, WebhookURL: ""},
 					Bark:       BarkChannelConfig{Enabled: false, WebhookURL: ""},
 				},
 			},

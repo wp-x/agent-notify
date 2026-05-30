@@ -215,6 +215,7 @@ func (s *Service) disableAgentNotification(cfg config.Config, path, agent string
 		cfg.Notify.ClaudeCode.Channels.Feishu.Enabled = false
 		cfg.Notify.ClaudeCode.Channels.System.Enabled = false
 		cfg.Notify.ClaudeCode.Channels.WechatWork.Enabled = false
+		cfg.Notify.ClaudeCode.Channels.DingTalk.Enabled = false
 		cfg.Notify.ClaudeCode.Channels.Bark.Enabled = false
 		cfg.Notify.ClaudeCode.Events = nil
 		cfg.Agent.ClaudeCode.Enabled = false
@@ -222,6 +223,7 @@ func (s *Service) disableAgentNotification(cfg config.Config, path, agent string
 		cfg.Notify.Codex.Channels.Feishu.Enabled = false
 		cfg.Notify.Codex.Channels.System.Enabled = false
 		cfg.Notify.Codex.Channels.WechatWork.Enabled = false
+		cfg.Notify.Codex.Channels.DingTalk.Enabled = false
 		cfg.Notify.Codex.Channels.Bark.Enabled = false
 		cfg.Notify.Codex.Events = nil
 		cfg.Agent.Codex.Enabled = false

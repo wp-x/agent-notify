@@ -9,7 +9,8 @@
       "Bash(codex hooks *)",
       "Bash(codex /hooks --help)",
       "Bash(codex features *)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(rtk *)"
     ]
   }
 }
