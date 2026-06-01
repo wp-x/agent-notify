@@ -3,7 +3,6 @@ package common
 import (
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 )
 
@@ -26,22 +25,8 @@ func ResolveBinaryPath(input string) string {
 	return DefaultBinaryPath
 }
 
-// toUnixStylePath converts Windows path to Unix-style path (e.g., C:\Users\... -> /c/Users/...)
-// This format is commonly used in Git Bash and similar environments on Windows.
+// toUnixStylePath converts backslashes to forward slashes (e.g., C:\Users\... -> C:/Users/...)
+// This format works in cmd.exe, PowerShell, and Git Bash on Windows.
 func toUnixStylePath(path string) string {
-	if runtime.GOOS != "windows" {
-		return path
-	}
-
-	// Check if it's a Windows absolute path (e.g., C:\...)
-	if len(path) >= 2 && path[1] == ':' {
-		driveLetter := strings.ToLower(string(path[0]))
-		rest := path[2:]
-		// Convert backslashes to forward slashes
-		rest = strings.ReplaceAll(rest, "\\", "/")
-		return "/" + driveLetter + rest
-	}
-
-	// Already a Unix-style path or relative path
 	return strings.ReplaceAll(path, "\\", "/")
 }
